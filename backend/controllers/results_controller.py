@@ -10,3 +10,9 @@ def get_mercado_results(query):
     mercado_search = MercadoLivre_searches(query)
     results = mercado_search.perform_search()
     return jsonify(results)
+
+def get_results(query):
+    amazon_results = get_amazon_results(query).json if hasattr(get_amazon_results(query), 'json') else []
+    mercado_results = get_mercado_results(query).json if hasattr(get_mercado_results(query), 'json') else []
+    combined_results = amazon_results + mercado_results
+    return jsonify(combined_results)
