@@ -6,6 +6,7 @@
 ## Funcionalidades
 - Comparação de preços entre diferentes lojas virtuais.
 - Coleta de dados automatizada via web scraping.
+- Salva resultados de buscas recentes (até 2 dias) em cookies para evitar consultas desnecessárias.
 
 ## Tecnologias
 
