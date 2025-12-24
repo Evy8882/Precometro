@@ -31,7 +31,8 @@ class Amazon_searches(Searches):
             price = result.get("price", "No price found")
             image = result.get("thumbnail", "")
             rating = result.get("rating", "No rating found")
-            results.append({"engine": "amazon","title": title, "price": price, "image": image, "rating": rating})
+            link = result.get("link", "")
+            results.append({"engine": "amazon","title": title, "price": price, "image": image, "rating": rating, "link": link})
         return results
         # all_items = page_data.find_all("div", class_="sg-col-inner")
         # results = []
@@ -58,7 +59,37 @@ class MercadoLivre_searches(Searches):
             title = item.find("a", class_="poly-component__title").text
             price = item.find("span", class_="andes-money-amount__fraction").text
             image = item.find("img", class_="poly-component__picture")["src"]
-            rating = item.find("span", class_="poly-phrase-label").text if item.find("span", class_="poly-phrase-label") else "No rating found"
+            rating = item.find("span", class_="poly-phrase-label").text if item.find("span", class_="poly-phrase-label") else "No rating found",
+            link = item.find("a", class_="poly-component__title")["href"]
             results.append({"engine": "mercadolivre","title": title, "price": price, "image": image, "rating": rating})
         return results
             
+class Ebay_searches(Searches):
+    def __init__(self, query):
+        super().__init__(query)
+    def perform_search(self):
+        # Gerar chave API em https://serpapi.com/
+        # Usos mensais do plano gratuito: 250
+        api_key = os.getenv("API_KEY")
+        params = {
+            "api_key": api_key,
+            "engine": "ebay",
+            "_nkw": self.query,
+            "ebay_domain": "ebay.com",
+        }
+        search = requests.get(f"https://serpapi.com/search.json", params=params)
+        response = search.json()
+        results = []
+        for result in response.get("organic_results", []):
+            title = result.get("title", "No title found")
+            price_raw = result.get("price", {"raw": "No price found"})
+            price = ""
+            if "to" in price_raw:
+                price = price_raw["to"]["raw"]
+            else:
+                price = price_raw["raw"]
+            image = result.get("thumbnail", "")
+            rating = result.get("rating", "No rating found")
+            link = result.get("link", "")
+            results.append({"engine": "ebay","title": title, "price": price, "image": image, "rating": rating, "link": link})
+        return results
