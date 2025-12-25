@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom"
 
 function Search() {
     const navigate = useNavigate();
-    const { query } = useParams<{ query: string }>();
+    const { query, index } = useParams<{ query: string; index?: string }>();
+    const currentIndex = index ? parseInt(index) : 0;
     const [searchQuery, setSearchQuery] = useState(query || "");
     const [loading, setLoading] = useState(true);
     const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000'
@@ -21,7 +22,7 @@ function Search() {
     fetch(api_url + '/?query=' + query)
         .then(res => res.json())
         .then(data => {
-            const fetchedProducts = data.map((item: any) => ({
+            const fetchedProducts = data[currentIndex].map((item: any) => ({
                 title: item.title,
                 price: item.price,
                 image: item.image,
