@@ -25,14 +25,20 @@ def split_list(input_list, chunk_size) -> list:
     return splitted_list 
 
 def get_results(query):
+    if not query:
+        return None
+    
     existing_data = get_data_cookie("combined_results")
     if existing_data:
         return existing_data
+    
     amazon_results = get_amazon_results(query).json if hasattr(get_amazon_results(query), 'json') else []
     mercado_results = get_mercado_results(query).json if hasattr(get_mercado_results(query), 'json') else []
     ebay_results = get_ebay_results(query).json if hasattr(get_ebay_results(query), 'json') else []
+    
     combined_results = amazon_results + mercado_results + ebay_results
     random.shuffle(combined_results)
     splitted_results = split_list(combined_results, 15)
+    
     set_data_cookie(query, splitted_results)
-    return jsonify(splitted_results)
+    return jsonify({"data": splitted_results, "status": 200, "success": True, "results": len(combined_results)})

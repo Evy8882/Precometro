@@ -7,6 +7,7 @@ function Search() {
     const currentIndex = index ? parseInt(index) : 0;
     const [searchQuery, setSearchQuery] = useState(query || "");
     const [loading, setLoading] = useState(true);
+    const [searchErr, setSearchErr] = useState(false);
     const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
     type Product = {
@@ -20,12 +21,24 @@ function Search() {
     const [products, setProducts] = useState<Product[]>([]);
 
     fetch(api_url + '/?query=' + query)
-        .then(res => res.json())
+    .then(res => res.json())
+        .then(body => {
+            if (!body.success) {
+                if (body.status == 401) {
+                    setLoading(false);
+                    setSearchErr(true);
+                    throw new Error('Invalid search parameters');
+                }
+            }else{
+                return body.data;
+            }
+        })
         .then(data => {
             const fetchedProducts = data[currentIndex].map((item: any) => ({
                 title: item.title,
                 price: item.price,
                 image: item.image,
+                link: item.link,
                 rating: item.rating,
                 engine: item.engine
             }));
@@ -57,6 +70,7 @@ function Search() {
                 products.length === 0 ? (
                     <p>Nenhum resultado encontrado para "{query}".</p>
                 ) : (
+                    searchErr ? (<p>Parametros de busca inválidos...</p>) : (
                     products.map((product, index) => (
                         <div key={index} className="product-card">
                             <img src={product.image} alt={product.title} className="product-image" />
@@ -64,7 +78,7 @@ function Search() {
                             <p className="product-price">Preço: {product.price}</p>
                             <p className="product-rating">Avaliação: {product.rating}</p>
                             <p className="product-engine">Loja: {product.engine}</p>
-                        </div>
+                        </div>)
                     ))
                 )
             )}
