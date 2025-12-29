@@ -14,12 +14,12 @@ function Home() {
         <h1 className="home-title">Preçometro</h1>
         <p className="home-description">Comparação de preços em diferentes lojas online.</p>
         <h3 className="home-subtitle">Comece com uma busca:</h3>
-        <div className="search-bar">
+        <form className="search-bar">
           <input className="search-input" value={searchQuery} type="text" placeholder="Digite o produto..."
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           />
           <button onClick={handleSearch} className="search-button">Buscar</button>
-        </div>
+        </form>
       </div>
     )
   }
