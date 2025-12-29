@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 
 function Search() {
@@ -20,37 +20,43 @@ function Search() {
 
     const [products, setProducts] = useState<Product[]>([]);
 
-    fetch(api_url + '/?query=' + query)
-    .then(res => res.json())
-        .then(body => {
-            if (!body.success) {
-                if (body.status == 401) {
-                    setLoading(false);
-                    setSearchErr(true);
-                    throw new Error('Invalid search parameters');
+    useEffect(() => {
+        setLoading(true);
+        setSearchErr(false);
+        
+        fetch(api_url + '/?query=' + query)
+        .then(res => res.json())
+            .then(body => {
+                if (!body.success) {
+                    if (body.status == 401) {
+                        setLoading(false);
+                        setSearchErr(true);
+                        throw new Error('Invalid search parameters');
+                    }
+                }else{
+                    return body.data;
                 }
-            }else{
-                return body.data;
-            }
-        })
-        .then(data => {
-            const fetchedProducts = data[currentIndex].map((item: any) => ({
-                title: item.title,
-                price: item.price,
-                image: item.image,
-                link: item.link,
-                rating: item.rating,
-                engine: item.engine
-            }));
-            setProducts(fetchedProducts);
-            setLoading(false);
-        }).catch(err => {
-            console.error('Error fetching products:', err);
-        });
+            })
+            .then(data => {
+                const fetchedProducts = data[currentIndex].map((item: any) => ({
+                    title: item.title,
+                    price: item.price,
+                    image: item.image,
+                    link: item.link,
+                    rating: item.rating,
+                    engine: item.engine
+                }));
+                setProducts(fetchedProducts);
+                setLoading(false);
+            }).catch(err => {
+                console.error('Error fetching products:', err);
+                setLoading(false);
+            });
+    }, [query, currentIndex, api_url]);
 
-        function handleSearch() {
-            navigate('/search/' + searchQuery);
-        }
+    function handleSearch() {
+        navigate('/search/' + searchQuery);
+    }
 
     return (
       <div className="search-container">

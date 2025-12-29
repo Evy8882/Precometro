@@ -8,7 +8,9 @@ CORS(app)
 @app.route('/', methods=['GET'])
 def home():
     query = request.args.get('query', '')
-    results = get_results(query)
+    sort_type = request.args.get('sort', '')
+    single_store = request.args.get('store', '')
+    results = get_results(query, sort_type, single_store)
     if results:
         response = make_response(results, 200)
         return response

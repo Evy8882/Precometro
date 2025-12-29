@@ -16,7 +16,7 @@ function Home() {
         <h3 className="home-subtitle">Comece com uma busca:</h3>
         <div className="search-bar">
           <input className="search-input" value={searchQuery} type="text" placeholder="Digite o produto..."
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           />
           <button onClick={handleSearch} className="search-button">Buscar</button>
         </div>
